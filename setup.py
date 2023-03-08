@@ -131,12 +131,49 @@ if "--self_ck_attn_torch" in sys.argv:
                 'ckExt/csrc/self_ck_attn_torch/self_ck_attn.cu',
             ],
             include_dirs=[os.path.join(this_dir, 'csrc'),
-                                    os.path.join(this_dir, 'ckExt/csrc/self_ck_attn')],
+                                    os.path.join(this_dir, 'ckExt/csrc/self_ck_attn_torch')],
                       extra_compile_args={'cxx': ['-O3',] + generator_flag,
                                           'nvcc': hipcc_args_mha},
                       library_dirs=[CK_EXT_PATH+'/fused_attention', 
                                     CK_LIB_PATH+'/lib'],
                       libraries=['fused_attention', 'device_operations']
+                      #libraries=['fused_attention', 'device_operations', '_kernel_explorer', 'onnxruntime_providers_rocm']
+                      #libraries=['fused_attention', 'device_operations', 'onnxruntime_providers_rocm', 'onnxruntime_pybind11_state']
+                      #dlink=True,
+                      #dlink_libraries=['fused_attention', 'device_operations']
+        )
+    )
+
+if "--self_ck_attn_torchTensor" in sys.argv:
+    if "--self_ck_attn_torchTensor" in sys.argv:
+        sys.argv.remove("--self_ck_attn_torchTensor")
+    hipcc_args_mha = ['-O3',
+                      '-std=c++17',
+                      '-I'+CK_LIB_PATH+'/include',
+                      '-I'+CK_PATH+'/extension/fused_attention_torch',
+                      '-I'+ROCM_PATH+'/include/hiprand',
+                      '-I'+ROCM_PATH+'/include/rocrand',
+                      '-U__HIP_NO_HALF_OPERATORS__',
+                      '-U__HIP_NO_HALF_CONVERSIONS__'] + generator_flag
+    if found_Backward_Pass_Guard:
+        hipcc_args_mha = hipcc_args_mha + ['-DBACKWARD_PASS_GUARD'] + ['-DBACKWARD_PASS_GUARD_CLASS=BackwardPassGuard']
+    if found_ROCmBackward_Pass_Guard:
+        hipcc_args_mha = hipcc_args_mha + ['-DBACKWARD_PASS_GUARD'] + ['-DBACKWARD_PASS_GUARD_CLASS=ROCmBackwardPassGuard']
+
+    ext_modules.append(
+        CUDAExtension(
+            name='self_ck_attn_torchTensor',
+            sources=[
+                'ckExt/csrc/self_ck_attn_torchTensor/ck_attn_frontend.cpp',
+                'ckExt/csrc/self_ck_attn_torchTensor/self_ck_attn.cu',
+            ],
+            include_dirs=[os.path.join(this_dir, 'csrc'),
+                                    os.path.join(this_dir, 'ckExt/csrc/self_ck_attn_torchTensor')],
+                      extra_compile_args={'cxx': ['-O3',] + generator_flag,
+                                          'nvcc': hipcc_args_mha},
+                      library_dirs=[CK_EXT_PATH+'/fused_attention_torch', 
+                                    CK_LIB_PATH+'/lib'],
+                      libraries=['fused_attention_torch', 'device_operations']
                       #libraries=['fused_attention', 'device_operations', '_kernel_explorer', 'onnxruntime_providers_rocm']
                       #libraries=['fused_attention', 'device_operations', 'onnxruntime_providers_rocm', 'onnxruntime_pybind11_state']
                       #dlink=True,
