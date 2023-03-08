@@ -181,6 +181,52 @@ if "--self_ck_attn_torchTensor" in sys.argv:
         )
     )
 
+if "--self_ck_attn_deviceArray" in sys.argv:
+    if "--self_ck_attn_deviceArray" in sys.argv:
+        sys.argv.remove("--self_ck_attn_deviceArray")
+    hipcc_args_mha = ['-O3',
+                      '-std=c++17',
+                      '-I'+CK_LIB_PATH+'/include',
+                      '-I'+CK_PATH+'/extension/fused_attention',
+                      '-I'+ORT_PATH+'/onnxruntime/python/tools/kernel_explorer',
+                      '-I'+ORT_PATH+'/onnxruntime',
+                      '-I'+ORT_PATH+'/include/onnxruntime',
+                      '-I'+ORT_BUILD_PATH,
+                      '-I'+ORT_BUILD_PATH+'/_deps/gsl-src/include',
+                      '-I'+ORT_BUILD_PATH+'/_deps/abseil_cpp-src',
+                      '-I'+ORT_BUILD_PATH+'/_deps/mp11-src/include',
+                      '-I'+ORT_BUILD_PATH+'/_deps/google_nsync-src/public',
+                      '-I'+ROCM_PATH+'/include/hiprand',
+                      '-I'+ROCM_PATH+'/include/rocrand',
+                      '-U__HIP_NO_HALF_OPERATORS__',
+                      '-U__HIP_NO_HALF_CONVERSIONS__'] + generator_flag
+    if found_Backward_Pass_Guard:
+        hipcc_args_mha = hipcc_args_mha + ['-DBACKWARD_PASS_GUARD'] + ['-DBACKWARD_PASS_GUARD_CLASS=BackwardPassGuard']
+    if found_ROCmBackward_Pass_Guard:
+        hipcc_args_mha = hipcc_args_mha + ['-DBACKWARD_PASS_GUARD'] + ['-DBACKWARD_PASS_GUARD_CLASS=ROCmBackwardPassGuard']
+
+    ext_modules.append(
+        CUDAExtension(
+            name='self_ck_attn_deviceArray',
+            sources=[
+                'ckExt/csrc/self_ck_attn_deviceArray/ck_attn_frontend.cu',
+                'ckExt/csrc/self_ck_attn_deviceArray/self_ck_attn.cu',
+            ],
+            include_dirs=[os.path.join(this_dir, 'csrc'),
+                                    os.path.join(this_dir, 'ckExt/csrc/self_ck_attn_deviceArray')],
+                      extra_compile_args={'cxx': ['-O3',] + generator_flag,
+                                          'nvcc': hipcc_args_mha},
+                      library_dirs=[CK_EXT_PATH+'/fused_attention_deviceArray', 
+                                    CK_LIB_PATH+'/lib', 
+                                    ORT_BUILD_PATH],
+                      libraries=['fused_attention_deviceArray', 'device_operations']
+                      #libraries=['fused_attention', 'device_operations', '_kernel_explorer', 'onnxruntime_providers_rocm']
+                      #libraries=['fused_attention', 'device_operations', 'onnxruntime_providers_rocm', 'onnxruntime_pybind11_state']
+                      #dlink=True,
+                      #dlink_libraries=['fused_attention', 'device_operations']
+        )
+    )
+
 setup(
     name="ckExt",
     version="0.1",
