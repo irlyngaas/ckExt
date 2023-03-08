@@ -4,10 +4,19 @@ self_ck_attn: Uses deviceArray ptr
 python setup.py install --self_ck_attn
 ```
 self_ck_attn_torch: Uses torchTensor ptr
+```
+python setup.py install --self_ck_attn_torch
+```
 
 self_ck_attn_torchTensor: Uses torchTensor
+```
+python setup.py install --self_ck_attn_torchTensor
+```
 
 self_ck_attn_deviceAray: Uses deviceArray Object
+```
+python setup.py install --self_ck_attn_deviceArray
+```
 
 
 # Building Dependencies
