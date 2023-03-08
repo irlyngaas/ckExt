@@ -9,6 +9,7 @@ import os
 
 ROCM_PATH = os.environ["ROCM_PATH"]
 CK_PATH = os.environ["CK_PATH"]
+CK_EXT_PATH = os.environ["CK_EXT_PATH"]
 CK_LIB_PATH = os.environ["CK_LIB_PATH"]
 ORT_PATH = os.environ["ORT_PATH"]
 ORT_BUILD_PATH = os.environ["ORT_BUILD_PATH"]
@@ -95,9 +96,46 @@ if "--self_ck_attn" in sys.argv:
                                     os.path.join(this_dir, 'ckExt/csrc/self_ck_attn')],
                       extra_compile_args={'cxx': ['-O3',] + generator_flag,
                                           'nvcc': hipcc_args_mha},
-                      library_dirs=[CK_PATH+'/extension/build_Correct/fused_attention', 
+                      library_dirs=[CK_EXT_PATH+'/fused_attention', 
                                     CK_LIB_PATH+'/lib', 
                                     ORT_BUILD_PATH],
+                      libraries=['fused_attention', 'device_operations']
+                      #libraries=['fused_attention', 'device_operations', '_kernel_explorer', 'onnxruntime_providers_rocm']
+                      #libraries=['fused_attention', 'device_operations', 'onnxruntime_providers_rocm', 'onnxruntime_pybind11_state']
+                      #dlink=True,
+                      #dlink_libraries=['fused_attention', 'device_operations']
+        )
+    )
+
+if "--self_ck_attn_torch" in sys.argv:
+    if "--self_ck_attn_torch" in sys.argv:
+        sys.argv.remove("--self_ck_attn_torch")
+    hipcc_args_mha = ['-O3',
+                      '-std=c++17',
+                      '-I'+CK_LIB_PATH+'/include',
+                      '-I'+CK_PATH+'/extension/fused_attention',
+                      '-I'+ROCM_PATH+'/include/hiprand',
+                      '-I'+ROCM_PATH+'/include/rocrand',
+                      '-U__HIP_NO_HALF_OPERATORS__',
+                      '-U__HIP_NO_HALF_CONVERSIONS__'] + generator_flag
+    if found_Backward_Pass_Guard:
+        hipcc_args_mha = hipcc_args_mha + ['-DBACKWARD_PASS_GUARD'] + ['-DBACKWARD_PASS_GUARD_CLASS=BackwardPassGuard']
+    if found_ROCmBackward_Pass_Guard:
+        hipcc_args_mha = hipcc_args_mha + ['-DBACKWARD_PASS_GUARD'] + ['-DBACKWARD_PASS_GUARD_CLASS=ROCmBackwardPassGuard']
+
+    ext_modules.append(
+        CUDAExtension(
+            name='self_ck_attn_torch',
+            sources=[
+                'ckExt/csrc/self_ck_attn_torch/ck_attn_frontend.cpp',
+                'ckExt/csrc/self_ck_attn_torch/self_ck_attn.cu',
+            ],
+            include_dirs=[os.path.join(this_dir, 'csrc'),
+                                    os.path.join(this_dir, 'ckExt/csrc/self_ck_attn')],
+                      extra_compile_args={'cxx': ['-O3',] + generator_flag,
+                                          'nvcc': hipcc_args_mha},
+                      library_dirs=[CK_EXT_PATH+'/fused_attention', 
+                                    CK_LIB_PATH+'/lib'],
                       libraries=['fused_attention', 'device_operations']
                       #libraries=['fused_attention', 'device_operations', '_kernel_explorer', 'onnxruntime_providers_rocm']
                       #libraries=['fused_attention', 'device_operations', 'onnxruntime_providers_rocm', 'onnxruntime_pybind11_state']
