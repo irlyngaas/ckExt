@@ -187,7 +187,7 @@ if "--self_ck_attn_deviceArray" in sys.argv:
     hipcc_args_mha = ['-O3',
                       '-std=c++17',
                       '-I'+CK_LIB_PATH+'/include',
-                      '-I'+CK_PATH+'/extension/fused_attention',
+                      '-I'+CK_PATH+'/extension/fused_attention_deviceArray',
                       '-I'+ORT_PATH+'/onnxruntime/python/tools/kernel_explorer',
                       '-I'+ORT_PATH+'/onnxruntime',
                       '-I'+ORT_PATH+'/include/onnxruntime',
