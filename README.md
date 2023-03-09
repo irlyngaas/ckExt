@@ -1,11 +1,12 @@
 # Building ckExt
 Need to build dependencies in the following sections and set the following paths
-
--CK_PATH: Path to composable_kernel repo
--CK_EXT_PATH: Path to composable_kernel extension build dir
--CK_LIB_PATH: Path to composable_kernel install dir
--ORT_PATH: Path to onnxruntime repo
--ORT_BUILD_PATH: Path to onnxruntime build dir
+<ul>
+<li>CK_PATH: Path to composable_kernel repo</li>
+<li>CK_EXT_PATH: Path to composable_kernel extension build dir</li>
+<li>CK_LIB_PATH: Path to composable_kernel install dir</li>
+<li>ORT_PATH: Path to onnxruntime repo</li>
+<li>ORT_BUILD_PATH: Path to onnxruntime build dir</li>
+</ul>
 
 
 
