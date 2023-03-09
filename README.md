@@ -38,7 +38,9 @@ Any combinations of these is fine
 module load rocm/5.4.0
 git clone git@github.com:irlyngaas/composable_kernel.git
 cd composable_kernel
+export CK_PATH=$PWD
 export CMAKE_INSTALL_PREFIX=/PATH/TO/CKLIB
+export CK_LIB_PATH=/PATH/TO/CKLIB
 mkdir build && cd build
 cmake                                                                                             \   
 -D CMAKE_PREFIX_PATH=/opt/rocm-5.4.0                                                              \   
@@ -50,16 +52,16 @@ cmake                                                                           
 make install
 
 ```
-Takes awhile to build if on crusher use my build at
+May take awhile to build if on crusher feel free to use my build at
 ```
-/gpfs/alpine/med106/world-shared/irl1/ckIntegration/cklib
+/gpfs/alpine/med106/world-shared/irl1/CKREDO/cklib/usr/local
 ```
 
 ## composable_kernel extensions
 ```
 cd composable_kernel/extension
 export CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH:/PATH/TO/CKLIB
-mkdir build && cd build && cmake .. && make -j
+mkdir build && cd build && export CK_EXT_PATH=$PWD && cmake .. && make -j
 ```
 
 ## onnxruntime
@@ -75,12 +77,34 @@ Build onnx
 git clone git@github.com:irlyngaas/onnxruntime.git
 cd onnxruntime
 bash build_ke.sh
+build_dir="build"
+config="Release"
+
+rocm_home="/opt/rocm-5.4.0"
+
+./build.sh --update \
+    --build_dir ${build_dir} \
+    --config ${config} \
+    --cmake_extra_defines \
+        CMAKE_HIP_COMPILER=/opt/rocm/llvm/bin/clang++ \
+        onnxruntime_BUILD_KERNEL_EXPLORER=ON \
+        onnxruntime_ENABLE_ATEN=OFF \
+    --skip_submodule_sync --skip_tests \
+    --use_rocm --rocm_home=${rocm_home} --nccl_home=${rocm_home} \
+    --build_wheel
+
+cmake --build ${build_dir}/${config} --target kernel_explorer --parallel
 export ORT_PATH=$PWD
 export ORT_BUILD_PATH=$PWD/build/Release
 ```
 
-Set environment variables to use kernelExplorer through python need to set these paths
+Set environment variables needed to use kernelExplorer through python
 ```
 export KERNEL_EXPLORER_BUILD_DIR=$ORT_BUILD_PATH
 export PYTHONPATH=$PYTHONPATH:$ORTPATH/onnxruntime/python/tools/kernel_explorer/kernels
+```
+
+Run onnxruntime gemm_softmax_gemm
+```
+python exp_gemm_softmax_gemm.py
 ```
