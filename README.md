@@ -1,4 +1,14 @@
 # Building ckExt
+Need to build dependencies in the following sections and set the following paths
+
+-CK_PATH: Path to composable_kernel repo
+-CK_EXT_PATH: Path to composable_kernel extension build dir
+-CK_LIB_PATH: Path to composable_kernel install dir
+-ORT_PATH: Path to onnxruntime repo
+-ORT_BUILD_PATH: Path to onnxruntime build dir
+
+
+
 self_ck_attn: Uses deviceArray ptr
 ```
 python setup.py install --self_ck_attn
@@ -17,6 +27,8 @@ self_ck_attn_deviceAray: Uses deviceArray Object
 ```
 python setup.py install --self_ck_attn_deviceArray
 ```
+
+Any combinations of these is fine
 
 
 # Building Dependencies
