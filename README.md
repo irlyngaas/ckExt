@@ -108,3 +108,17 @@ Run onnxruntime gemm_softmax_gemm
 ```
 python exp_gemm_softmax_gemm.py
 ```
+
+## Running Test scripts
+Modify ckExt/test/run_rocm_extensions.py:L6 to whichever unit test you want to run, for example
+```
+test_dirs = ["self_ck_attn"] #Runs only deviceArray w/ pointer Test
+test_dirs = ["self_ck_attn", "self_ck_attn_torch"] #Runs 2 unit tests
+```
+
+Run on Crusher
+```
+salloc -A PROJ -t TIME -p batch -N 1
+cd ckExt/test/self_ck_attn
+srun -n1 python ckExt/test/run_rocm_extensions.py
+```
