@@ -70,7 +70,7 @@ Set up python
 module load PrgEnv-gnu rocm/5.4.0 cray-python
 python3 -m venv onnx_env
 source onnx_env/bin/activate
-pip3 install --upgrade pip; pip3 install numpy, pip3 install cmake
+pip3 install --upgrade pip; pip3 install numpy; pip3 install cmake
 ```
 Build onnx
 ```
