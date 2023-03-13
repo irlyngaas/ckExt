@@ -76,6 +76,7 @@ Build onnx
 ```
 git clone git@github.com:irlyngaas/onnxruntime.git
 cd onnxruntime
+git checkout crusher
 bash build_ke.sh
 build_dir="build"
 config="Release"
