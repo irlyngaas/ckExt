@@ -1,5 +1,5 @@
 # Building ckExt
-Need to build dependencies in the following sections and set the following paths
+Need to build dependencies in the following sections and set the following paths to build
 <ul>
 <li>CK_PATH: Path to composable_kernel repo</li>
 <li>CK_EXT_PATH: Path to composable_kernel extension build dir</li>
@@ -7,6 +7,8 @@ Need to build dependencies in the following sections and set the following paths
 <li>ORT_PATH: Path to onnxruntime repo</li>
 <li>ORT_BUILD_PATH: Path to onnxruntime build dir</li>
 </ul>
+
+I use a conda environment I already have setup with pytorch, not the same environment used to build onnxruntime below
 
 
 
@@ -90,7 +92,9 @@ export PYTHONPATH=$PYTHONPATH:$ORTPATH/onnxruntime/python/tools/kernel_explorer/
 
 Run onnxruntime gemm_softmax_gemm
 ```
+salloc -A PROJ -t TIME -p batch -N 1
 python exp_gemm_softmax_gemm.py
+srun -n1 python ckExt/test/run_rocm_extensions.py
 ```
 
 ## Running Test scripts
