@@ -78,23 +78,6 @@ git clone git@github.com:irlyngaas/onnxruntime.git
 cd onnxruntime
 git checkout crusher
 bash build_ke.sh
-build_dir="build"
-config="Release"
-
-rocm_home="/opt/rocm-5.4.0"
-
-./build.sh --update \
-    --build_dir ${build_dir} \
-    --config ${config} \
-    --cmake_extra_defines \
-        CMAKE_HIP_COMPILER=/opt/rocm/llvm/bin/clang++ \
-        onnxruntime_BUILD_KERNEL_EXPLORER=ON \
-        onnxruntime_ENABLE_ATEN=OFF \
-    --skip_submodule_sync --skip_tests \
-    --use_rocm --rocm_home=${rocm_home} --nccl_home=${rocm_home} \
-    --build_wheel
-
-cmake --build ${build_dir}/${config} --target kernel_explorer --parallel
 export ORT_PATH=$PWD
 export ORT_BUILD_PATH=$PWD/build/Release
 ```
